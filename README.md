@@ -1,87 +1,87 @@
-# Data Analyst Agent — Portfolio Edition
+# Data Analyst Auditor
 
-A standalone, read-only NocoDB analyzer that reads tables, builds summary stats, creates charts (bar/pie), and generates Markdown reports with LLM-powered insights.
+Standalone-агент для чтения и аудита таблиц NocoDB. Читает таблицу через REST API, строит сводную статистику, генерирует графики (bar/pie) и Markdown-отчёт с LLM-выводами и рекомендациями.
 
-## Features
+## Возможности
 
-- **Read-only NocoDB access** via REST API.
-- **Automatic table profiling**: numeric, datetime, categorical, empty columns.
-- **Charts**: bar for ≤6 categories, pie for larger sets.
-- **LLM insights**: actionable recommendations in Russian or English.
-- **Dual LLM backend**: OpenAI API or any Ollama-compatible endpoint.
-- **Fallback**: if LLM is not configured or unreachable, rule-based insights are used.
+- **Только чтение** NocoDB через REST API.
+- **Автоматический профайлинг таблицы**: числовые, дата/время, категориальные и пустые колонки.
+- **Графики**: bar для ≤6 категорий, pie для большего числа.
+- **LLM-insights**: actionable-рекомендации на русском языке.
+- **Два LLM-backend'а**: OpenAI API или любой Ollama-compatible endpoint.
+- **Fallback**: если LLM не настроен или недоступен — используются встроенные rule-based выводы.
 
-## Quick start
+## Быстрый старт
 
-1. Clone/copy the repository.
-2. Create `.env` from `.env.example`.
-3. Install dependencies:
+1. Склонировать или скопировать репозиторий.
+2. Создать `.env` из `.env.example`.
+3. Установить зависимости:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Configure NocoDB and LLM backend.
-5. Run analysis:
+4. Настроить NocoDB и LLM-backend.
+5. Запустить анализ:
 
 ```bash
 python scripts/analyze_nocodb.py \
   --base-id YOUR_BASE_ID \
   --table-id YOUR_TABLE_ID \
-  --table-title "Your table" \
+  --table-title "Название таблицы" \
   --out-dir temp/YOUR_PROJECT
 ```
 
-## Configuration
+## Настройка
 
-Copy `.env.example` → `.env` and fill in your values.
+Скопируйте `.env.example` → `.env` и заполните значения.
 
-### Option A: OpenAI (recommended for cloud use)
+### Вариант A: OpenAI (рекомендуется для облачного использования)
 
 ```env
 LLM_BACKEND=openai
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=***
 OPENAI_MODEL=gpt-4o-mini
-# Optional: custom base URL for OpenAI-compatible providers
+# Опционально: кастомный base URL для OpenAI-compatible провайдеров
 # OPENAI_BASE_URL=https://api.openai.com/v1
 ```
 
-### Option B: Ollama (local or self-hosted)
+### Вариант B: Ollama (локальный или self-hosted)
 
 ```env
 LLM_BACKEND=ollama
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.2
-# Optional API token if your Ollama endpoint requires auth
-# OLLAMA_API_TOKEN=...
+# Опциональный API token, если Ollama-endpoint требует авторизацию
+# OLLAMA_API_TOKEN=***
 ```
 
-### Option C: No LLM
+### Вариант C: без LLM
 
-If no `OPENAI_API_KEY` or reachable Ollama endpoint is configured, the script falls back to built-in rule-based insights.
+Если не задан `OPENAI_API_KEY` или недоступен Ollama-endpoint, скрипт автоматически переключается на встроенные rule-based выводы.
 
 ### NocoDB
 
 ```env
 NOCODB_BASE_URL=https://nocodb.example.com
-NOCODB_API_TOKEN=your_api_token
+NOCODB_API_TOKEN=***
 ```
 
-Find `base_id` and `table_id` in your NocoDB dashboard URL:
+`base_id` и `table_id` берутся из URL дашборда NocoDB:
 
 ```
 https://nocodb.example.com/dashboard/#/<workspace>/<base_id>/<table_id>/...
 ```
 
-## Outputs
+## Результаты
 
-For each run, the script writes to `--out-dir`:
+После запуска в `--out-dir` создаются:
 
-- `nocodb_{base_id}_{table_id}_report.md` — full Markdown report.
-- `nocodb_{base_id}_{table_id}_summary.json` — structured summary.
-- `nocodb_{base_id}_{table_id}_{column}.png` — chart per interesting column.
+- `nocodb_{base_id}_{table_id}_report.md` — полный Markdown-отчёт.
+- `nocodb_{base_id}_{table_id}_summary.json` — структурированная сводка.
+- `nocodb_{base_id}_{table_id}_{column}.png` — график по каждой значимой колонке.
 
-## Example
+## Пример
 
 ```bash
 python scripts/analyze_nocodb.py \
@@ -91,32 +91,32 @@ python scripts/analyze_nocodb.py \
   --out-dir temp/crm_test
 ```
 
-## Project structure
+## Структура проекта
 
 ```
-data-analyst-portfolio/
+data-analyst-auditor/
 ├── scripts/
-│   ├── analyze_nocodb.py   # main analyzer + report generator
-│   ├── llm_client.py       # OpenAI / Ollama client
-│   ├── make_chart.py       # matplotlib charts
-│   ├── nocodb_client.py    # simple NocoDB reader
-│   └── shared.py           # helpers
+│   ├── analyze_nocodb.py   # основной анализатор + генератор отчётов
+│   ├── llm_client.py       # клиент OpenAI / Ollama
+│   ├── make_chart.py       # графики matplotlib
+│   ├── nocodb_client.py    # простой клиент NocoDB
+│   └── shared.py           # хелперы
 ├── config/
-│   └── settings.py         # env loader
-├── data/                   # sample data (not in Git)
-├── temp/                   # generated reports/charts (not in Git)
+│   └── settings.py         # загрузка .env
+├── data/                   # примеры данных (не в Git)
+├── temp/                   # сгенерированные отчёты/графики (не в Git)
 ├── .env.example
 ├── .gitignore
 ├── README.md
 └── requirements.txt
 ```
 
-## Safety
+## Безопасность
 
-- Read-only: only `GET` requests to NocoDB.
-- No secrets in Git: `.env`, `data/`, `temp/`, `logs/` are ignored.
-- LLM prompts only receive aggregated summary stats, never raw rows with PII.
+- Только чтение: только `GET`-запросы к NocoDB.
+- Секреты не попадают в Git: `.env`, `data/`, `temp/`, `logs/` игнорируются.
+- В LLM-промпт отправляется только агрегированная сводка, а не сырые строки с PII.
 
-## License
+## Лицензия
 
 MIT
