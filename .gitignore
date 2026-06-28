@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+
+data/
+logs/
+temp/
+
+__pycache__/
+*.py[cod]
+*.png
+*.jpg
+*.xlsx
+*.csv
+*.json
+!requirements.txt
+!config/*.json
